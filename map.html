@@ -1,0 +1,118 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #mapid { position: absolute;top: 40;bottom: 0;left: 0;left: 0; right: 0; }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+</head>
+<body>
+    <button id="polygon">Add Polygon</button>
+    <button id="marker">Add Marker</button>
+    <button id="circle">Add Circle</button>
+    <button id="saveToJSON">Save into json</button>
+    <button id="importFromJSON">import from json</button>
+    <div id="mapid"></div>
+    <script>
+        var map = L.map('mapid', {
+            crs: L.CRS.Simple
+        });
+
+
+        var lat, lng;
+        var currentadd = "";
+        var polygonArray = [];
+
+        class coords {
+            constructor(x,y){
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        map.addEventListener('mousemove', function(ev) {
+        lat = ev.latlng.lat;
+        lng = ev.latlng.lng;
+        });
+
+        var bounds = [[0,0], [1000,1000]];
+        var image = L.imageOverlay('./map.jpg', bounds).addTo(map);
+
+        var marker = L.marker([413.71875,424.65625]).addTo(map);
+
+        var polygon = L.polygon([
+            [414, 338], 
+            [359, 385], 
+            [380, 458], 
+            [399, 508], 
+            [498, 437]
+        ]).addTo(map);
+
+        document.getElementById("mapid").addEventListener("contextmenu", function (event) {
+            // Prevent the browser's context menu from appearing
+            event.preventDefault();
+
+            switch(currentadd) {
+                case "":
+                    {break;}
+                case "polygon":
+                    {
+                        console.log(polygonArray);
+                        
+                        drawPolygon(polygonArray)
+                        currentadd="";
+                        break;
+                    }
+            }
+            
+            console.log(currentadd)
+            console.log("[" + lat + ", " + lng+"],")
+            
+            return false; // To disable default popup.
+        });
+
+        document.getElementById("mapid").addEventListener("click", function (event) {
+            
+            switch(currentadd) {
+                case "":
+                    {break;}
+                case "polygon":
+                    {
+                        polygonArray.push([lat,lng])
+                        break;
+                    }
+            }
+           
+            console.log(currentadd)
+            console.log("[" + lat + ", " + lng+"],")
+            
+            return false; // To disable default popup.
+        });
+
+        function drawPolygon(coords) {
+            //var coords =  [[48,-3],[50,5],[44,11],[48,-3]] ;     
+
+            var polygon = L.polygon(coords, {color: 'red'});
+            polygon.addTo(map);
+
+            map.fitBounds(polygon.getBounds());
+        }
+
+        document.getElementById("polygon").addEventListener("click", function() {
+            console.log("polygon button");
+            currentadd="polygon";
+        }); 
+
+        marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+
+        map.fitBounds(bounds);    
+    </script>
+</body>
+</html>
