@@ -16,162 +16,19 @@
     <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="contextmenu.js"></script>
     
-
-
-
 </head>
 <body>
     <button id="polygon">Add Polygon</button>
     <button id="marker">Add Marker</button>
     <button id="circle">Add Circle</button>
     <button id="saveToJSON">Save into json</button>
+    <input type="file" id="selectFiles" value="Import" />
     <button id="importFromJSON">import from json</button>
+    <a id="downloadAnchorElem" style="display:none"></a>
     <div id="mapid"></div>
-    <script>
-        var map = L.map('mapid', {
-            crs: L.CRS.Simple
-        });
-
-        var lat, lng;
-        var currentadd = "";
-        var polygonArray = [];
-        var allPolygons = [];
-        var bounds = [[0,0], [1000,1000]];
-        var image = L.imageOverlay('./map.jpg', bounds).addTo(map);
-
-
-        //static elements
-        var marker = L.marker([413.71875,424.65625]).addTo(map);
-        var polygon = L.polygon([
-            [414, 338], 
-            [359, 385], 
-            [380, 458], 
-            [399, 508], 
-            [498, 437]
-        ]).addTo(map);
-        marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-
-        //Eventlistener
-        map.addEventListener('mousemove', function(ev) {
-            lat = ev.latlng.lat;
-            lng = ev.latlng.lng;
-        });
-
-        //rmb
-        document.getElementById("mapid").addEventListener("contextmenu", function (event) {
-            // Prevent the browser's context menu from appearing
-            event.preventDefault();
-
-            switch(currentadd) {
-                case "":
-                    {break;}
-                case "polygon":
-                    {                        
-                        //draw polygon
-                        drawPolygon(polygonArray)
-                        //clear polygon array
-                        polygonArray=[];
-                        //clear for switch case
-                        currentadd="";
-                        break;
-                    }
-            }
-            
-            //console.log(currentadd)
-            //console.log("[" + lat + ", " + lng+"],")
-            
-            return false; // To disable default popup.
-        });
-
-        //lmb
-        document.getElementById("mapid").addEventListener("click", function (event) {
-            
-            switch(currentadd) {
-                case "":
-                    {break;}
-                case "polygon":
-                    {
-                        polygonArray.push([lat,lng])
-                        break;
-                    }
-                case "market":
-                    {
-
-                    }
-            }
-           
-            //console.log(currentadd)
-            //console.log("[" + lat + ", " + lng+"],")
-            
-            return false; // To disable default popup.
-        });
-
-        //polygon button
-        document.getElementById("polygon").addEventListener("click", function() {
-            //console.log("polygon button");
-            if(currentadd!="") {
-                window.alert("finish " + currentadd + " first");
-            } else currentadd="polygon";
-        }); 
-
-        //marker button
-        document.getElementById("marker").addEventListener("click", function() {
-            //console.log("marker button");
-            if(currentadd!="") {
-                window.alert("finish " + currentadd + " first");
-            } else currentadd="marker";
-        }); 
-
-        //circle button
-        document.getElementById("circle").addEventListener("click", function() {
-            //console.log("circle button");
-            if(currentadd!="") {
-                window.alert("finish " + currentadd + " first");
-            } else currentadd="circle";
-        }); 
-
-        //importFromJSON button
-        document.getElementById("importFromJSON").addEventListener("click", function() {
-            //console.log("importFromJSON button");
-            
-        }); 
-
-        //saveToJSON button
-        document.getElementById("saveToJSON").addEventListener("click", function() {
-            //console.log("saveToJSON button");
-        }); 
-
-
-        function drawPolygon(coords) {
-            //var coords =  [[48,-3],[50,5],[44,11],[48,-3]] ;     
-
-            var tmpPolygon = L.polygon(coords, {color: 'red'});
-            allPolygons.push(tmpPolygon);
-            tmpPolygon.addTo(map);
-            map.fitBounds(tmpPolygon.getBounds());
-        }
-
-        function drawMarker(lat,lng) {
-            //var coords =  [[48,-3],[50,5],[44,11],[48,-3]] ;     
-
-            var marker = L.marker([lat,lng]);
-            marker.addTo(map);
-
-            map.fitBounds(marker.getBounds());
-        }
-
-        function drawCircle(lat,lng,parRadius) {
-            //var coords =  [[48,-3],[50,5],[44,11],[48,-3]] ;     
-
-            var circle = L.circle([lat, lng], {
-                radius: parRadius
-            });
-            circle.addTo(map);
-
-            map.fitBounds(circle.getBounds());
-        }        
-      
-        map.fitBounds(bounds);    
-    </script>
+    <script src="session.js"></script>
+    <script src="polygon.js"></script>
+    <script src="marker.js"></script>
+    <script src="./main.js"></script>
 </body>
 </html>
