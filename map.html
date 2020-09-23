@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        #mapid { position: absolute;top: 40;bottom: 0;left: 0;left: 0; right: 0; }
+        #mapid { position: absolute;top: 70;bottom: 0;left: 0;left: 0; right: 0; }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -12,6 +12,13 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="contextmenu.js"></script>
+    
+
+
+
 </head>
 <body>
     <button id="polygon">Add Polygon</button>
@@ -25,28 +32,16 @@
             crs: L.CRS.Simple
         });
 
-
         var lat, lng;
         var currentadd = "";
         var polygonArray = [];
-
-        class coords {
-            constructor(x,y){
-                this.x = x;
-                this.y = y;
-            }
-        }
-
-        map.addEventListener('mousemove', function(ev) {
-        lat = ev.latlng.lat;
-        lng = ev.latlng.lng;
-        });
-
+        var allPolygons = [];
         var bounds = [[0,0], [1000,1000]];
         var image = L.imageOverlay('./map.jpg', bounds).addTo(map);
 
-        var marker = L.marker([413.71875,424.65625]).addTo(map);
 
+        //static elements
+        var marker = L.marker([413.71875,424.65625]).addTo(map);
         var polygon = L.polygon([
             [414, 338], 
             [359, 385], 
@@ -54,7 +49,15 @@
             [399, 508], 
             [498, 437]
         ]).addTo(map);
+        marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
 
+        //Eventlistener
+        map.addEventListener('mousemove', function(ev) {
+            lat = ev.latlng.lat;
+            lng = ev.latlng.lng;
+        });
+
+        //rmb
         document.getElementById("mapid").addEventListener("contextmenu", function (event) {
             // Prevent the browser's context menu from appearing
             event.preventDefault();
@@ -63,21 +66,24 @@
                 case "":
                     {break;}
                 case "polygon":
-                    {
-                        console.log(polygonArray);
-                        
+                    {                        
+                        //draw polygon
                         drawPolygon(polygonArray)
+                        //clear polygon array
+                        polygonArray=[];
+                        //clear for switch case
                         currentadd="";
                         break;
                     }
             }
             
-            console.log(currentadd)
-            console.log("[" + lat + ", " + lng+"],")
+            //console.log(currentadd)
+            //console.log("[" + lat + ", " + lng+"],")
             
             return false; // To disable default popup.
         });
 
+        //lmb
         document.getElementById("mapid").addEventListener("click", function (event) {
             
             switch(currentadd) {
@@ -88,30 +94,83 @@
                         polygonArray.push([lat,lng])
                         break;
                     }
+                case "market":
+                    {
+
+                    }
             }
            
-            console.log(currentadd)
-            console.log("[" + lat + ", " + lng+"],")
+            //console.log(currentadd)
+            //console.log("[" + lat + ", " + lng+"],")
             
             return false; // To disable default popup.
         });
 
+        //polygon button
+        document.getElementById("polygon").addEventListener("click", function() {
+            //console.log("polygon button");
+            if(currentadd!="") {
+                window.alert("finish " + currentadd + " first");
+            } else currentadd="polygon";
+        }); 
+
+        //marker button
+        document.getElementById("marker").addEventListener("click", function() {
+            //console.log("marker button");
+            if(currentadd!="") {
+                window.alert("finish " + currentadd + " first");
+            } else currentadd="marker";
+        }); 
+
+        //circle button
+        document.getElementById("circle").addEventListener("click", function() {
+            //console.log("circle button");
+            if(currentadd!="") {
+                window.alert("finish " + currentadd + " first");
+            } else currentadd="circle";
+        }); 
+
+        //importFromJSON button
+        document.getElementById("importFromJSON").addEventListener("click", function() {
+            //console.log("importFromJSON button");
+            
+        }); 
+
+        //saveToJSON button
+        document.getElementById("saveToJSON").addEventListener("click", function() {
+            //console.log("saveToJSON button");
+        }); 
+
+
         function drawPolygon(coords) {
             //var coords =  [[48,-3],[50,5],[44,11],[48,-3]] ;     
 
-            var polygon = L.polygon(coords, {color: 'red'});
-            polygon.addTo(map);
-
-            map.fitBounds(polygon.getBounds());
+            var tmpPolygon = L.polygon(coords, {color: 'red'});
+            allPolygons.push(tmpPolygon);
+            tmpPolygon.addTo(map);
+            map.fitBounds(tmpPolygon.getBounds());
         }
 
-        document.getElementById("polygon").addEventListener("click", function() {
-            console.log("polygon button");
-            currentadd="polygon";
-        }); 
+        function drawMarker(lat,lng) {
+            //var coords =  [[48,-3],[50,5],[44,11],[48,-3]] ;     
 
-        marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+            var marker = L.marker([lat,lng]);
+            marker.addTo(map);
 
+            map.fitBounds(marker.getBounds());
+        }
+
+        function drawCircle(lat,lng,parRadius) {
+            //var coords =  [[48,-3],[50,5],[44,11],[48,-3]] ;     
+
+            var circle = L.circle([lat, lng], {
+                radius: parRadius
+            });
+            circle.addTo(map);
+
+            map.fitBounds(circle.getBounds());
+        }        
+      
         map.fitBounds(bounds);    
     </script>
 </body>
